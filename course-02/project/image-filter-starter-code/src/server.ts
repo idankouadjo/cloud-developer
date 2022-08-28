@@ -31,7 +31,6 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       result => {
         console.log(result)
         res.status(200).sendFile(result, () => {
-  //    4. deletes any files on the server on finish of the response
           deleteLocalFiles([result]);
         });
   // QUERY PARAMATERS
