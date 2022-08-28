@@ -1,4 +1,5 @@
 import express from 'express';
+import {Application, Request, Response, NextFunction, Errback} from "express";
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -15,7 +16,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
-  app.get("/filteredimage", async (req, res) => {
+  app.get("/filteredimage", async (req: Request, res: Response, next: NextFunction) => {
 
   // endpoint to filter an image from a public url.
   //    1. validate the image_url query
@@ -24,22 +25,19 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     if (!image_url){
       return res.status(404).send("Resource not found.")
     }
-  //    2. call filterImageFromURL(image_url) to filter the image
-    filterImageFromURL(image_url).then(
+    //    2. call filterImageFromURL(image_url) to filter the image
+    try { 
+      let imagePath = await filterImageFromURL(image_url) as string;
     
-  //    3. send the resulting file in the response 
-      result => {
-        console.log(result)
-        res.status(200).sendFile(result, () => {
-          deleteLocalFiles([result]);
+      //    3. send the resulting file in the response 
+      return res.status(200).sendFile(imagePath, () => {
+          deleteLocalFiles([imagePath]);
         });
-  // QUERY PARAMATERS
-  //    image_url: URL of a publicly accessible image
-  // RETURNS
-  //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
 
-      }
-    )
+    }
+    catch(e){
+      return next(e)
+    }
   })  
   /**************************************************************************** */
   //! END @TODO1
