@@ -3,6 +3,10 @@ import {Application, Request, Response, NextFunction, Errback} from "express";
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
+interface Query {
+  image_url:string;
+}
+
 (async () => {
 
   // Init the Express application
@@ -20,7 +24,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   // endpoint to filter an image from a public url.
   //    1. validate the image_url query
-    const {image_url} = req.query;
+    const {image_url} = req.query as Query;
     console.log(image_url)
     if (!image_url){
       return res.status(404).send("Resource not found.")
