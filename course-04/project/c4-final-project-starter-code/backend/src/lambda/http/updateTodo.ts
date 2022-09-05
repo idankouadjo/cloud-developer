@@ -28,6 +28,7 @@ handler
   .use(
     cors({
       credentials: true,
-      headers: true
+      headers: true,
+      origin: '*'
     })
   )
