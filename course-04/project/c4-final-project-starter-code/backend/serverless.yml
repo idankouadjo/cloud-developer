@@ -1,5 +1,5 @@
 # TODO: Change the name of the org 
-org: idanbouadjo
+org: idankouadjo
 app: serverless-todo-app
 service: serverless-todo-app
 
@@ -26,7 +26,7 @@ provider:
   environment:
     TODOS_TABLE: Todos-${self:provider.stage}
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
-    ATTACHMENT_S3_BUCKET: serverless-c4-todoapp-images-${self:provider.stage}
+    ATTACHMENT_S3_BUCKET: serverless-c4-ida-todoapp-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
   logs:
@@ -61,7 +61,7 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynammodb:GetItem
+          - dynamodb:GetItem
           - dyanmodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
@@ -136,6 +136,7 @@ functions:
         Action:
           - 's3:GetObject'
           - 's3:PutObject'
+        Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*'
 
 resources:
   Resources:
@@ -147,9 +148,9 @@ resources:
       Properties:
         ResponseParameters:
           gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'Context-Type, X-Amz-Date,Authorization'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Context-Type, X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
           gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
-        ResponseType: DEAFULT_4XX
+        ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: 'ApiGatewayRestApi'
     
@@ -157,7 +158,7 @@ resources:
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        AttributeDEfinitions:
+        AttributeDefinitions:
           - AttributeName: userId
             AttributeType: S
           - AttributeName: todoId
@@ -169,16 +170,16 @@ resources:
             KeyType: HASH
           - AttributeName: todoId
             KeyType: RANGE
-        BilingMode: PAY_PER_REQUEST
+        BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TODOS_TABLE}
         LocalSecondaryIndexes:
-          - IndexName: ${self.provider.environment.TODOS_CREATED_AT_INDEX}
+          - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
             KeySchema:
               - AttributeName: userId
                 KeyType: HASH
               - AttributeName: createdAt
                 KeyType: RANGE
-            Projectiuon:
+            Projection:
               ProjectionType: ALL 
 
     # TODO: Complete the bucket properties below. 
@@ -216,4 +217,4 @@ resources:
               Principal: '*'
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*'
-        Bucket: !Ref AttacmentsBucket
+        Bucket: !Ref AttachmentsBucket
