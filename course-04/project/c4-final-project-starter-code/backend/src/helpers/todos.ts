@@ -13,6 +13,9 @@ const attachmentUtils = new AttachmentUtils();
 const logger = createLogger("Todos");
 
 export async function getTodosForUser(userId: string): Promise<TodoItem[]>{
+    logger.info("Getting all todos for user", {
+        userId: userId
+    })
     return await todoAccess.getTodosForUser(userId)
 }
 
@@ -28,11 +31,16 @@ export async function createTodo(userId: string,
         createdAt: Date.now().toString()
     }
     try{
+        logger.info("Creating new todo...", {
+            todoId: todoId
+        })
         const newItem = await todoAccess.createTodo(todoItem)
         return newItem
     } catch (e) {
         const err = createError(e)
-        logger.error(err)
+        logger.error("An error occured. Use can not be created", {
+            error: err
+        })
     }
     
 }
@@ -42,10 +50,14 @@ export async function updateTodo(
     todoId:string, 
     updatedTodo: UpdateTodoRequest): 
     Promise<UpdateTodoRequest>{
+        logger.info("Updating todo...", {
+            todoId: todoId
+        })
     return todoAccess.updateTodo(userId, todoId, updatedTodo)
 }
 
 export async function createAttachmentPresignedUrl(userId: string, todoId: string): Promise<any>{
+    logger.info("Generating SignedUrl...")
     return attachmentUtils.generateUploadUrl(userId, todoId);
 }
 
