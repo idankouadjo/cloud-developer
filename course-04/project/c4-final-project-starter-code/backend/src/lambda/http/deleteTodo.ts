@@ -14,8 +14,8 @@ export const handler = middy(
     const userId = getUserId(event);
     await deleteTodo(userId, todoId);
     return {
-      statusCode: 200,
-      body: JSON.stringify({})
+      statusCode: 204,
+      body: ''
     }
   }
 )
