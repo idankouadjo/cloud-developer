@@ -11,12 +11,12 @@ export class AttachmentUtils {
     constructor(
         private readonly buckname: string = process.env.ATTACHMENT_S3_BUCKET
     ){}
-    async generateUploadUrl(userId: string, todoId: string): Promise<any>{
+    async generateUploadUrl(userId: string, todoId: string): Promise<string>{
         const presignedUrl: string = await s3.getSignedUrl('putObject',{
             Bucket: this.buckname,
             Key: `${userId}-${todoId}-`,
             Expires: '300'
-        }).promise()
+        })
 
         return presignedUrl
     }
