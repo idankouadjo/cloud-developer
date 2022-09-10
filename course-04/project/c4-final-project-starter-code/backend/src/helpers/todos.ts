@@ -10,6 +10,7 @@ import * as createError from 'http-errors'
 // TODO: Implement businessLogic
 const todoAccess = new TodosAccess();
 const attachmentUtils = new AttachmentUtils();
+const bucketName = process.env.ATTACHMENT_S3_BUCKET
 const logger = createLogger("Todos");
 
 export async function getTodosForUser(userId: string): Promise<TodoItem[]>{
@@ -26,9 +27,11 @@ export async function createTodo(userId: string,
     const todoItem: TodoItem = {
         userId: userId,
         todoId: todoId,
-        ...newTodo,
+        name: newTodo.name,
+        dueDate: newTodo.dueDate,
         done: false,
-        createdAt: Date.now().toString()
+        createdAt: Date.now().toString(),
+        attachmentUrl: `https://${bucketName}.s3.amazonaws.com/${userId}-${todoId}-`
     }
     try{
         logger.info("Creating new todo...", {
